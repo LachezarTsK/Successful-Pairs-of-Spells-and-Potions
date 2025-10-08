@@ -14,7 +14,7 @@ public class Solution
             {
                 continue;
             }
-            int minSuccessIndex = binarySearchMinSuccessIndex(potions, spells[i], success);
+            int minSuccessIndex = BinarySearchMinSuccessIndex(potions, spells[i], success);
             int numberOfSuccessPairs = potions.Length - minSuccessIndex;
             successPairs[i] = numberOfSuccessPairs;
         }
@@ -22,7 +22,7 @@ public class Solution
         return successPairs;
     }
 
-    private int binarySearchMinSuccessIndex(int[] potions, int spell, long success)
+    private int BinarySearchMinSuccessIndex(int[] potions, int spell, long success)
     {
         int left = 0;
         int right = potions.Length - 1;
