@@ -6,35 +6,39 @@
  * @return {number[]}
  */
 var successfulPairs = function (spells, potions, success) {
-    const sizeSpells = spells.length;
-    const sizePotions = potions.length;
-
-    const pairs = new Array(sizeSpells).fill(0);
     potions.sort((x, y) => x - y);
+    const successPairs = new Array(spells.length).fill(0);
 
-    for (let i = 0; i < sizeSpells; ++i) {
-        pairs[i] = sizePotions - searchForIndexOfSmallestSuccessfulMatch(potions, spells[i], success);
+    for (let i = 0; i < spells.length; ++i) {
+        if (potions[potions.length - 1] * spells[i] < success) {
+            continue;
+        }
+        const minSuccessIndex = binarySearchMinSuccessIndex(potions, spells[i], success);
+        const numberOfSuccessPairs = potions.length - minSuccessIndex;
+        successPairs[i] = numberOfSuccessPairs;
     }
-    return pairs;
+
+    return successPairs;
 };
 
 /**
  * @param {number[]} potions
- * @param {number} current
+ * @param {number} spell
  * @param {number} success
  * @return {number}
  */
-function searchForIndexOfSmallestSuccessfulMatch(potions, current, success) {
+function  binarySearchMinSuccessIndex(potions, spell, success) {
     let left = 0;
     let right = potions.length - 1;
-    
+
     while (left <= right) {
-        let middle = left + Math.floor((right - left) / 2);
-        if (current * potions[middle] >= success) {
-            right = middle - 1;
-        } else {
+        const middle = left + Math.floor((right - left) / 2);
+
+        if (potions[middle] * spell < success) {
             left = middle + 1;
+        } else {
+            right = middle - 1;
         }
     }
-    return left; //if no match is found, left = potions.length
+    return left;
 }
