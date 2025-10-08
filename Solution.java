@@ -4,30 +4,34 @@ import java.util.Arrays;
 public class Solution {
 
     public int[] successfulPairs(int[] spells, int[] potions, long success) {
-        int sizeSpells = spells.length;
-        int sizePotions = potions.length;
-
-        int[] pairs = new int[sizeSpells];
         Arrays.sort(potions);
+        int[] successPairs = new int[spells.length];
 
-        for (int i = 0; i < sizeSpells; ++i) {
-            pairs[i] = sizePotions - searchForIndexOfSmallestSuccessfulMatch(potions, spells[i], success);
+        for (int i = 0; i < spells.length; ++i) {
+            if ((long) potions[potions.length - 1] * spells[i] < success) {
+                continue;
+            }
+            int minSuccessIndex = binarySearchMinSuccessIndex(potions, spells[i], success);
+            int numberOfSuccessPairs = potions.length - minSuccessIndex;
+            successPairs[i] = numberOfSuccessPairs;
         }
-        return pairs;
+
+        return successPairs;
     }
 
-    private int searchForIndexOfSmallestSuccessfulMatch(int[] potions, long current, long sucess) {
+    private int binarySearchMinSuccessIndex(int[] potions, int spell, long success) {
         int left = 0;
         int right = potions.length - 1;
 
         while (left <= right) {
             int middle = left + (right - left) / 2;
-            if (current * potions[middle] >= sucess) {
-                right = middle - 1;
-            } else {
+
+            if ((long) potions[middle] * spell < success) {
                 left = middle + 1;
+            } else {
+                right = middle - 1;
             }
         }
-        return left; //if no match is found, left = potions.length
+        return left;
     }
 }
