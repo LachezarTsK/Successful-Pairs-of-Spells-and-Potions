@@ -1,36 +1,42 @@
 
+#include <ranges>
 #include <vector>
 using namespace std;
 
 class Solution {
-    
+
 public:
-    vector<int> successfulPairs(vector<int>& spells, vector<int>& potions, long long success) {
-        int sizeSpells = spells.size();
-        int sizePotions = potions.size();
+    vector<int> successfulPairs(vector<int>& spells, vector<int>& potions, long long success) const {
+        ranges::sort(potions);
+        vector<int> successPairs(spells.size());
 
-        vector<int> pairs(sizeSpells);
-        sort(potions.begin(), potions.end());
-
-        for (int i = 0; i < sizeSpells; ++i) {
-            pairs[i] = sizePotions - searchForIndexOfSmallestSuccessfulMatch(potions, spells[i], success);
+        for (int i = 0; i < spells.size(); ++i) {
+            if (static_cast<long long>(potions[potions.size() - 1]) * spells[i] < success) {
+                continue;
+            }
+            int minSuccessIndex = binarySearchMinSuccessIndex(potions, spells[i], success);
+            int numberOfSuccessPairs = potions.size() - minSuccessIndex;
+            successPairs[i] = numberOfSuccessPairs;
         }
-        return pairs;
+
+        return successPairs;
     }
 
 private:
-    int searchForIndexOfSmallestSuccessfulMatch(const vector<int>& potions, long long current, long long sucess) {
+    int binarySearchMinSuccessIndex(span<const int> potions, int spell, long long success) const {
         int left = 0;
         int right = potions.size() - 1;
 
         while (left <= right) {
             int middle = left + (right - left) / 2;
-            if (current * potions[middle] >= sucess) {
-                right = middle - 1;
-            } else {
+
+            if (static_cast<long long>(potions[middle]) * spell < success) {
                 left = middle + 1;
             }
+            else {
+                right = middle - 1;
+            }
         }
-        return left; //if no match is found, left = potions.length
+        return left;
     }
 };
